@@ -15,6 +15,7 @@ refs.loadMoreBtn.addEventListener('click', fetchAndRenderPhotos);
 function onSearchSubmit(e) {
   const searchQueryValue = e.target.elements.searchQuery.value.trim();
   e.preventDefault();
+  photosApiService.page = 1;
 
   photosApiService.searchQuery = searchQueryValue;
   fetchAndRenderPhotos();
