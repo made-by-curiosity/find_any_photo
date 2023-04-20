@@ -7,10 +7,26 @@
     <title>Homework 11</title>
   </head>
   <body>
-    <div class="gallery">
-      <!-- Карточки изображений -->
+    <div class="search-bar">
+      <form class="search-form" id="search-form">
+        <input
+          type="text"
+          name="searchQuery"
+          autocomplete="off"
+          placeholder="Search images..."
+          class="search-input"
+        />
+        <button type="submit" class="submit-btn"></button>
+      </form>
     </div>
-    <button type="button" class="load-more">Load more</button>
+
+    <div class="container">
+      <div class="gallery">
+        <!-- Карточки изображений -->
+      </div>
+      <button type="button" class="load-more">Load more</button>
+    </div>
+
     <script src="index.js" type="module"></script>
   </body>
 </html>

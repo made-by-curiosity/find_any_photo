@@ -1,5 +1,5 @@
 import './css/styles.css';
 import Notify from 'notiflix';
-import debounce from 'lodash.debounce';
-
-const DEBOUNCE_DELAY = 300;
+import axios from 'axios';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
