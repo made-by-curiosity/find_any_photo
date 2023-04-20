@@ -104,7 +104,7 @@ button.submit-btn::before {
   justify-content: center;
 }
 
-button.load-more {
+button.load-more-btn {
   width: 150px;
   height: 40px;
 
@@ -122,7 +122,7 @@ button.load-more {
 
   transition: background-color 300ms linear;
 }
-button.load-more:hover,
-button.load-more:focus {
+button.load-more-btn:hover,
+button.load-more-btn:focus {
   background-color: #1631aa;
 }
