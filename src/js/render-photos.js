@@ -18,7 +18,7 @@ function createPhotosMarkup(photos) {
     } = photo;
 
     return (markup += `<div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+  <img src="${webformatURL}" alt="${tags}" loading="lazy" width="400" />
   <div class="info">
     <p class="info-item">
       <b>Likes ${likes}</b>

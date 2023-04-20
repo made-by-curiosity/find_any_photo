@@ -13,6 +13,7 @@ refs.searchFrom.addEventListener('submit', onSearchSubmit);
 refs.loadMoreBtn.addEventListener('click', fetchAndRenderPhotos);
 
 function onSearchSubmit(e) {
+  refs.galleryContainer.innerHTML = '';
   const searchQueryValue = e.target.elements.searchQuery.value.trim();
   e.preventDefault();
   photosApiService.page = 1;
