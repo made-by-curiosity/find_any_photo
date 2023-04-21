@@ -16,14 +16,14 @@ refs.loadMoreBtn.addEventListener('click', onLoadMore);
 function onSearchSubmit(e) {
   e.preventDefault();
 
-  if (!refs.loadMoreBtn.classList.contains('is-hidden')) {
-    refs.loadMoreBtn.classList.toggle('is-hidden');
-  }
-
   const searchQueryValue = e.target.elements.searchQuery.value.trim();
   if (searchQueryValue === '') {
     showEmptyFieldMessage();
     return;
+  }
+
+  if (!refs.loadMoreBtn.classList.contains('is-hidden')) {
+    refs.loadMoreBtn.classList.toggle('is-hidden');
   }
 
   refs.galleryContainer.innerHTML = '';
@@ -82,6 +82,7 @@ function onLoadMore() {
         console.error(error.response.data);
         showNoMoreResultsMessage();
         refs.loadMoreBtn.classList.toggle('is-hidden');
+        return;
       }
       console.log(error);
     });
