@@ -27,6 +27,8 @@ p {
 
 img {
   display: block;
+  height: 100%;
+  width: 100%;
 }
 
 .search-bar {
@@ -117,6 +119,9 @@ div.gallery {
 
 div.photo-card {
   width: 400px;
+  height: 330px;
+  display: flex;
+  flex-direction: column;
 
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
     0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06),
@@ -124,8 +129,24 @@ div.photo-card {
     0 100px 80px rgba(0, 0, 0, 0.12);
 }
 
+a.photo-wrapper {
+  width: 100%;
+  height: 270px;
+}
+
+.photo-wrapper > img {
+  object-fit: cover;
+}
+
 div.info {
+  width: 100%;
+  height: 60px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+
   display: flex;
+
+  text-align: center;
 }
 
 button.load-more-btn {

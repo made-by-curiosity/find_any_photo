@@ -12,6 +12,9 @@ console.log(photosApiService);
 refs.searchFrom.addEventListener('submit', onSearchSubmit);
 refs.loadMoreBtn.addEventListener('click', fetchAndRenderPhotos);
 
+// удалить
+fetchAndRenderPhotos();
+
 function onSearchSubmit(e) {
   refs.galleryContainer.innerHTML = '';
   const searchQueryValue = e.target.elements.searchQuery.value.trim();
@@ -37,6 +40,8 @@ function fetchAndRenderPhotos() {
 
     showTotalFoundMessage(totalSearchResult);
     renderGalleryPhotos(photos);
+
+    let gallery = new SimpleLightbox('.gallery a');
   });
 }
 
