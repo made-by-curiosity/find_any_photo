@@ -76,6 +76,8 @@ function onLoadMore() {
       renderGalleryPhotos(photos);
 
       gallery.refresh();
+
+      smoothScrollOnLoadMore();
     })
     .catch(error => {
       if (error.response.status === 400) {
@@ -108,4 +110,15 @@ function showNoMoreResultsMessage() {
 
 function showSomethingWentWrongMessage() {
   Notify.failure('Oops, something went wrong. Try again later.');
+}
+
+function smoothScrollOnLoadMore() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
