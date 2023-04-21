@@ -11,36 +11,80 @@ const gallery = new SimpleLightbox('.gallery a');
 console.log(photosApiService);
 
 refs.searchFrom.addEventListener('submit', onSearchSubmit);
-refs.loadMoreBtn.addEventListener('click', fetchAndRenderPhotos);
+refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
 function onSearchSubmit(e) {
-  refs.galleryContainer.innerHTML = '';
-  const searchQueryValue = e.target.elements.searchQuery.value.trim();
   e.preventDefault();
-  photosApiService.page = 1;
 
+  if (!refs.loadMoreBtn.classList.contains('is-hidden')) {
+    refs.loadMoreBtn.classList.toggle('is-hidden');
+  }
+
+  const searchQueryValue = e.target.elements.searchQuery.value.trim();
+  if (searchQueryValue === '') {
+    showEmptyFieldMessage();
+    return;
+  }
+
+  refs.galleryContainer.innerHTML = '';
+  photosApiService.resetPage();
   photosApiService.searchQuery = searchQueryValue;
-  fetchAndRenderPhotos();
+
+  photosApiService
+    .fetchPhotos()
+    .then(res => {
+      const totalSearchResult = res.data.totalHits;
+      const photos = res.data.hits;
+      console.log(photos);
+
+      if (photos.length === 0) {
+        showNoMatchMessage();
+        return;
+      }
+      showTotalFoundMessage(totalSearchResult);
+
+      photosApiService.incrementPage();
+      renderGalleryPhotos(photos);
+
+      gallery.refresh();
+
+      refs.loadMoreBtn.classList.toggle('is-hidden');
+    })
+    .catch(error => {
+      showSomethingWentWrongMessage();
+      console.log(error);
+    });
+
   e.target.elements.searchQuery.value = '';
 }
 
-function fetchAndRenderPhotos() {
-  photosApiService.fetchPhotos().then(res => {
-    console.log(res);
-    const totalSearchResult = res.data.totalHits;
-    const photos = res.data.hits;
-    console.log(photos);
+function onLoadMore() {
+  photosApiService
+    .fetchPhotos()
+    .then(res => {
+      const photos = res.data.hits;
+      console.log(photos);
 
-    if (photos.length === 0) {
-      showNoMatchMessage();
-      return;
-    }
+      if (photos.length === 0) {
+        showNoMoreResultsMessage();
+        refs.loadMoreBtn.classList.toggle('is-hidden');
+        return;
+      }
 
-    showTotalFoundMessage(totalSearchResult);
-    renderGalleryPhotos(photos);
+      photosApiService.incrementPage();
 
-    gallery.refresh();
-  });
+      renderGalleryPhotos(photos);
+
+      gallery.refresh();
+    })
+    .catch(error => {
+      if (error.response.status === 400) {
+        console.error(error.response.data);
+        showNoMoreResultsMessage();
+        refs.loadMoreBtn.classList.toggle('is-hidden');
+      }
+      console.log(error);
+    });
 }
 
 function showNoMatchMessage() {
@@ -49,6 +93,18 @@ function showNoMatchMessage() {
   );
 }
 
+function showEmptyFieldMessage() {
+  Notify.failure("Search field shouldn't be empty");
+}
+
 function showTotalFoundMessage(total) {
   Notify.success(`Hooray! We found ${total} images.`);
+}
+
+function showNoMoreResultsMessage() {
+  Notify.failure("We're sorry, but you've reached the end of search results.");
+}
+
+function showSomethingWentWrongMessage() {
+  Notify.failure('Oops, something went wrong. Try again later.');
 }

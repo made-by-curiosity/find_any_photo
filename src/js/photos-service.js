@@ -18,9 +18,19 @@ export class PhotosApiService {
         orientation: 'horizontal',
         safesearch: true,
         per_page: 40,
+        page: this.page,
       },
     };
     console.log(this);
+
     return axios(config);
+  }
+
+  incrementPage() {
+    this.page += 1;
+  }
+
+  resetPage() {
+    this.page = 1;
   }
 }

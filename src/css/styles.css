@@ -151,6 +151,7 @@ div.info {
 }
 
 button.load-more-btn {
+  display: block;
   width: 150px;
   height: 40px;
 
@@ -171,4 +172,8 @@ button.load-more-btn {
 button.load-more-btn:hover,
 button.load-more-btn:focus {
   background-color: #1631aa;
+}
+
+button.load-more-btn.is-hidden {
+  display: none;
 }
