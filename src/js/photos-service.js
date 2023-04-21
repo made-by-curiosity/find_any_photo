@@ -6,7 +6,7 @@ export class PhotosApiService {
     this.searchQuery = '';
   }
 
-  fetchPhotos() {
+  async fetchPhotos() {
     const BASE_URL = `https://pixabay.com/api/`;
     const API_KEY = '35477319-8304939ba4ef8e390b1df04a7';
     const config = {
@@ -21,9 +21,8 @@ export class PhotosApiService {
         page: this.page,
       },
     };
-    console.log(this);
 
-    return axios(config);
+    return await axios(config);
   }
 
   incrementPage() {

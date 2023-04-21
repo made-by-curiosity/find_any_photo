@@ -63,14 +63,14 @@ input.search-input {
 }
 
 button.submit-btn {
-  width: 40px;
-  height: 100%;
+  width: 36px;
+  height: 90%;
   padding: 0;
 
   position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
+  top: 2px;
+  bottom: 2px;
+  right: 2px;
 
   border: 0;
   border-radius: 5px;
@@ -89,8 +89,8 @@ button.submit-btn:focus {
 button.submit-btn::before {
   content: '';
   display: block;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
 
   background-image: url('../img/search.png');
   background-repeat: no-repeat;

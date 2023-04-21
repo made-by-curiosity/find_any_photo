@@ -8,12 +8,11 @@ import { renderGalleryPhotos } from './js/render-photos';
 
 const photosApiService = new PhotosApiService();
 const gallery = new SimpleLightbox('.gallery a');
-console.log(photosApiService);
 
 refs.searchFrom.addEventListener('submit', onSearchSubmit);
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
-function onSearchSubmit(e) {
+async function onSearchSubmit(e) {
   e.preventDefault();
 
   const searchQueryValue = e.target.elements.searchQuery.value.trim();
@@ -30,64 +29,59 @@ function onSearchSubmit(e) {
   photosApiService.resetPage();
   photosApiService.searchQuery = searchQueryValue;
 
-  photosApiService
-    .fetchPhotos()
-    .then(res => {
-      const totalSearchResult = res.data.totalHits;
-      const photos = res.data.hits;
-      console.log(photos);
+  try {
+    const result = await photosApiService.fetchPhotos();
 
-      if (photos.length === 0) {
-        showNoMatchMessage();
-        return;
-      }
-      showTotalFoundMessage(totalSearchResult);
+    const totalSearchResult = result.data.totalHits;
+    const photos = result.data.hits;
 
-      photosApiService.incrementPage();
-      renderGalleryPhotos(photos);
+    if (photos.length === 0) {
+      showNoMatchMessage();
+      return;
+    }
+    showTotalFoundMessage(totalSearchResult);
 
-      gallery.refresh();
+    photosApiService.incrementPage();
+    renderGalleryPhotos(photos);
 
-      refs.loadMoreBtn.classList.toggle('is-hidden');
-    })
-    .catch(error => {
-      showSomethingWentWrongMessage();
-      console.log(error);
-    });
+    gallery.refresh();
+
+    refs.loadMoreBtn.classList.toggle('is-hidden');
+  } catch (error) {
+    showSomethingWentWrongMessage();
+    console.log(error);
+  }
 
   e.target.elements.searchQuery.value = '';
 }
 
-function onLoadMore() {
-  photosApiService
-    .fetchPhotos()
-    .then(res => {
-      const photos = res.data.hits;
-      console.log(photos);
+async function onLoadMore() {
+  try {
+    const result = await photosApiService.fetchPhotos();
+    const photos = result.data.hits;
 
-      if (photos.length === 0) {
-        showNoMoreResultsMessage();
-        refs.loadMoreBtn.classList.toggle('is-hidden');
-        return;
-      }
+    if (photos.length === 0) {
+      showNoMoreResultsMessage();
+      refs.loadMoreBtn.classList.toggle('is-hidden');
+      return;
+    }
 
-      photosApiService.incrementPage();
+    photosApiService.incrementPage();
 
-      renderGalleryPhotos(photos);
+    renderGalleryPhotos(photos);
 
-      gallery.refresh();
+    gallery.refresh();
 
-      smoothScrollOnLoadMore();
-    })
-    .catch(error => {
-      if (error.response.status === 400) {
-        console.error(error.response.data);
-        showNoMoreResultsMessage();
-        refs.loadMoreBtn.classList.toggle('is-hidden');
-        return;
-      }
-      console.log(error);
-    });
+    smoothScrollOnLoadMore();
+  } catch (error) {
+    if (error.response.status === 400) {
+      console.error(error.response.data);
+      showNoMoreResultsMessage();
+      refs.loadMoreBtn.classList.toggle('is-hidden');
+      return;
+    }
+    console.log(error);
+  }
 }
 
 function showNoMatchMessage() {
