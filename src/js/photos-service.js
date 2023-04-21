@@ -3,9 +3,7 @@ import axios from 'axios';
 export class PhotosApiService {
   constructor() {
     this.page = 1;
-    // this.searchQuery = '';
-    // удалить и раскоментить сверху
-    this.searchQuery = 'dog';
+    this.searchQuery = '';
   }
 
   fetchPhotos() {

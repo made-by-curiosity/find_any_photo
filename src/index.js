@@ -7,13 +7,11 @@ import { PhotosApiService } from './js/photos-service';
 import { renderGalleryPhotos } from './js/render-photos';
 
 const photosApiService = new PhotosApiService();
+const gallery = new SimpleLightbox('.gallery a');
 console.log(photosApiService);
 
 refs.searchFrom.addEventListener('submit', onSearchSubmit);
 refs.loadMoreBtn.addEventListener('click', fetchAndRenderPhotos);
-
-// удалить
-fetchAndRenderPhotos();
 
 function onSearchSubmit(e) {
   refs.galleryContainer.innerHTML = '';
@@ -41,7 +39,7 @@ function fetchAndRenderPhotos() {
     showTotalFoundMessage(totalSearchResult);
     renderGalleryPhotos(photos);
 
-    let gallery = new SimpleLightbox('.gallery a');
+    gallery.refresh();
   });
 }
 
