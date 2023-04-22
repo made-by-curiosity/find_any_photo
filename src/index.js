@@ -29,58 +29,44 @@ async function onSearchSubmit(e) {
   photosApiService.resetPage();
   photosApiService.searchQuery = searchQueryValue;
 
-  try {
-    const result = await photosApiService.fetchPhotos();
-
-    const totalSearchResult = result.data.totalHits;
-    const photos = result.data.hits;
-
-    if (photos.length === 0) {
-      showNoMatchMessage();
-      return;
-    }
-    showTotalFoundMessage(totalSearchResult);
-
-    photosApiService.incrementPage();
-    renderGalleryPhotos(photos);
-
-    gallery.refresh();
-
-    refs.loadMoreBtn.classList.toggle('is-hidden');
-  } catch (error) {
-    showSomethingWentWrongMessage();
-    console.log(error);
-  }
+  await fetchAndRenderPhotos();
 
   e.target.elements.searchQuery.value = '';
 }
 
 async function onLoadMore() {
+  await fetchAndRenderPhotos();
+  smoothScrollOnLoadMore();
+}
+
+async function fetchAndRenderPhotos() {
   try {
     const result = await photosApiService.fetchPhotos();
+    const totalSearchResult = result.data.totalHits;
+    const loadedPhotosCount = photosApiService.page * photosApiService.perPage;
     const photos = result.data.hits;
 
-    if (photos.length === 0) {
-      showNoMoreResultsMessage();
+    if (photosApiService.page === 1) {
+      if (photos.length === 0) {
+        showNoMatchMessage();
+        return;
+      }
+      showTotalFoundMessage(totalSearchResult);
+
       refs.loadMoreBtn.classList.toggle('is-hidden');
-      return;
     }
 
     photosApiService.incrementPage();
-
     renderGalleryPhotos(photos);
-
     gallery.refresh();
 
-    smoothScrollOnLoadMore();
-  } catch (error) {
-    if (error.response.status === 400) {
-      console.error(error.response.data);
+    if (loadedPhotosCount >= totalSearchResult) {
       showNoMoreResultsMessage();
       refs.loadMoreBtn.classList.toggle('is-hidden');
       return;
     }
-    console.log(error);
+  } catch (error) {
+    showSomethingWentWrongMessage();
   }
 }
 
