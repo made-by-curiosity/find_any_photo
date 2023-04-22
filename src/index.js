@@ -2,70 +2,97 @@ import './css/styles.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import debounce from 'lodash.debounce';
 import { refs } from './js/refs';
 import { PhotosApiService } from './js/photos-service';
 import { renderGalleryPhotos } from './js/render-photos';
 
 const photosApiService = new PhotosApiService();
 const gallery = new SimpleLightbox('.gallery a');
+let isNoContentLeft = false;
+let totalSearchResult;
 
 refs.searchFrom.addEventListener('submit', onSearchSubmit);
-refs.loadMoreBtn.addEventListener('click', onLoadMore);
+window.addEventListener('scroll', debounce(onLoadMore, 300));
 
 async function onSearchSubmit(e) {
   e.preventDefault();
 
+  // empty search field check
   const searchQueryValue = e.target.elements.searchQuery.value.trim();
   if (searchQueryValue === '') {
     showEmptyFieldMessage();
     return;
   }
 
-  if (!refs.loadMoreBtn.classList.contains('is-hidden')) {
-    refs.loadMoreBtn.classList.toggle('is-hidden');
-  }
-
+  // reset all properties
+  isNoContentLeft = false;
+  totalSearchResult = 0;
   refs.galleryContainer.innerHTML = '';
   photosApiService.resetPage();
+
+  // set new search query
   photosApiService.searchQuery = searchQueryValue;
 
+  // add found photos on a page
   await fetchAndRenderPhotos();
 
+  // clear search field value
   e.target.elements.searchQuery.value = '';
 }
 
 async function onLoadMore() {
-  await fetchAndRenderPhotos();
-  smoothScrollOnLoadMore();
+  const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+
+  //stop loading more photos if content ended or gallery is updating with new search query
+  if (isNoContentLeft || refs.galleryContainer.innerHTML === '') {
+    return;
+  }
+
+  // load more photos when reached the end of a page
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    await fetchAndRenderPhotos();
+    smoothScrollOnLoadMore();
+  }
 }
 
 async function fetchAndRenderPhotos() {
+  const totalPhotosOnPage = refs.galleryContainer.children.length;
+
+  // check if content ended before new fetch(backend bug, gives back more photos than free user limit)
+  if (totalPhotosOnPage >= totalSearchResult && totalSearchResult !== 0) {
+    showNoMoreResultsMessage();
+    isNoContentLeft = true;
+    return;
+  }
+
   try {
     const result = await photosApiService.fetchPhotos();
-    const totalSearchResult = result.data.totalHits;
-    const loadedPhotosCount = photosApiService.page * photosApiService.perPage;
     const photos = result.data.hits;
+    totalSearchResult = result.data.totalHits;
 
+    // check if content ended after fetch
+    if (photosApiService.page > 1 && photos.length === 0) {
+      showNoMoreResultsMessage();
+      isNoContentLeft = true;
+      return;
+    }
+
+    // show total found or no matches messages on a new search query
     if (photosApiService.page === 1) {
       if (photos.length === 0) {
         showNoMatchMessage();
         return;
       }
       showTotalFoundMessage(totalSearchResult);
-
-      refs.loadMoreBtn.classList.toggle('is-hidden');
     }
 
+    // add new photos in gallery
     photosApiService.incrementPage();
     renderGalleryPhotos(photos);
     gallery.refresh();
-
-    if (loadedPhotosCount >= totalSearchResult) {
-      showNoMoreResultsMessage();
-      refs.loadMoreBtn.classList.toggle('is-hidden');
-      return;
-    }
   } catch (error) {
+    console.log(error);
     showSomethingWentWrongMessage();
   }
 }
